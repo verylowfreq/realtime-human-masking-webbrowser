@@ -8,7 +8,7 @@ Mask the person in the web camera image in real time.
 
 **まだ開発初期段階です。バグとか不具合は容赦してね。**
 
-**Try it ! →→→ [LIVE DEMO](app.html) ←←← （Use in landscape direction / モバイルは横向きで！）**
+**Try it ! →→→ [LIVE DEMO](https://verylowfreq.github.io/realtime-human-masking-webbrowser/app.html) ←←← （Use in landscape direction / モバイルは横向きで！）**
 
 
 ![thumbnail](https://user-images.githubusercontent.com/60875431/215302104-ccdf282e-59b4-41e7-97c7-0435bb7a0fb1.gif)
