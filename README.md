@@ -11,6 +11,8 @@ Mask the person in the web camera image in real time.
 **Try it ! →→→ [LIVE DEMO](app.html) ←←← （Use in landscape direction / モバイルは横向きで！）**
 
 
+![thumbnail](https://user-images.githubusercontent.com/60875431/215302104-ccdf282e-59b4-41e7-97c7-0435bb7a0fb1.gif)
+
 ※Webビデオ会議サービスで背景だけ差し替える機能がありますが、つまりそれの逆（背景をそのまま、人間だけ書き換え）をやっています。
 
 
