@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <title>Real-time human masking on Web browser</title>
+
+        <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils@0.3/drawing_utils.js" crossorigin="anonymous"></script>
+        <script src="https://cdn.jsdelivr.net/npm/@mediapipe/pose@0.5/pose.js" crossorigin="anonymous"></script>
+        <script src="ModalDialog.js"></script>
+        <script src="VideoSource.js"></script>
+        <script src="MaskUtil.js"></script>
+        <script src="script.js"></script>
+
+        <link rel="stylesheet" href="style.css">
+        <!-- <meta name="viewport" content="width=device-width, initial-scale=1"> -->
+        <!-- <meta name="viewport" content="initial-scale=1">
+        <meta name="mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-capable" content="yes"> -->
+    </head>
+
+    <body>
+        <p id="performanceStatus">(Statistics)</p>
+        <p>
+            <!-- <button id="changeVideoSourceDevice">Change</button> -->
+            <select id="videoSourceDeviceSelect">Webcam devices</select>
+        </p>
+        <p>
+            <button id="startButton">カメラ起動 / Start</button>
+            <button id="stopButton">停止 / Stop</button>
+            <label><input type="checkbox" id="forceHideOnNoDetectionCheckbox" checked>非検出時は全面マスク表示 / Force masking on no-detection</label>
+            &nbsp;&nbsp;
+            <label><input type="checkbox" id="useDilateAreaForMaskCheckbox">マスク領域を拡張する / Expand detected area</label>
+        </p>
+        <p>
+            <button id="takeBackgroundImageButton">未処理カメラ映像を撮ってマスクに設定 / Take a photo and set as mask</button>
+            <button id="resetBackgroundButton">マスクをデフォルトにリセット / Reset mask</button>
+        </p>
+        
+        <div id="resultCanvasContainer">
+            <p>処理結果 / Result: &nbsp;&nbsp; <button id="fullscreenButton">[危険]全画面表示/[DANGER]Fullscreen</button></p>
+            <p id="detectionStatusText">(Detection status)</p>
+            <progress id="loadingProgressbar" style="display:none"></progress>
+        </div>
+
+        <hr>
+        <div style="margin:1em;">&nbsp;</div>
+
+        <div>
+            <details id="debugCanvasContainer">
+                <summary>デバッグ情報・映像（未処理のカメラ映像含む） / Debug panel</summary>
+
+                <p>
+                    <button onclick="location.reload(true)">ページを強制リロード</button>
+                </p>
+
+                <div id="debugCanvasContainerInnerContent">
+                    <div>
+                        <p>マスク画像</p>
+                        <canvas id="backgroundImageCanvas" width="320" height="180" style="width:320px;height:180px;"></canvas>
+                    </div>
+                    <div id="debugMaskBitmapCanvasContainer">
+                        <p>検出したエリア</p>
+                    </div>
+                    <div id="debugMaskWorkspaceCanvasContainer">
+                        <p>マスク処理済み</p>
+                    </div>
+                    <div>
+                        <p>カメラの未処理映像</p>
+                        <canvas id="targetVideoFrame" width="1280" height="720" style="width:320px;height:180px;"></canvas>
+                    </div>
+                </div>
+            </detials>
+        </div>
+
+    </body>
+</html>
