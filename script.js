@@ -8,20 +8,23 @@
 const dilateArea = (canvas) => {
     const ctx = canvas.getContext('2d');
     const original = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    const originalData = original.data;
     const result = ctx.createImageData(canvas.width, canvas.height);
+    const resultData = result.data;
     const bpp = 4;
     const stride = bpp * canvas.width;
-    for (let y = 0; y < canvas.height; y++) {
-        for (let x = 0; x < canvas.width; x++) {
+    const width = canvas.width;
+    const height = canvas.height;
+    for (let y = 0; y < height; y++) {
+        for (let x = 0; x < width; x++) {
             let startIndex = y * stride + x * bpp;
             // let r = original.data[startIndex + 0];
             // let g = original.data[startIndex + 1];
             // let b = original.data[startIndex + 2];
-            let a = original.data[startIndex + 3];
+            let a = originalData[startIndex + 3];
             if (a != 0) {
-                a = 255;
+                resultData[startIndex + 3] = 255;
             }
-            result.data[startIndex + 3] = a;
         }
     }
     return result;
