@@ -61,7 +61,50 @@ const drawSquarePattern = (canvas) => {
     }
 };
 
+class ShowElementAsFullScreenUtil {
+    /** 
+     * @param {HTMLElement} appRoot
+     * @param {HTMLElement} fullscreenRoot
+     */
+    constructor(appRoot, fullscreenRoot) {
+        this.appRoot = appRoot;
+        this.fullscreenRoot = fullscreenRoot;
+    }
 
+    /**
+     * @param {HTMLElement} element 
+     */
+    async showAsync(element) {
+        return new Promise((resolve, reject) => {
+            const originalParentElement = element.parentElement;
+            this.fullscreenRoot.appendChild(element);
+            const currentWidth = element.offsetWidth;
+            const currentHeight = element.offsetHeight;
+            const ratio = currentHeight / currentWidth;
+            const originalWidth = element.style.widows;
+            const originalHeight = element.style.height;
+            element.style.height = `${100}vh`;
+            element.style.width  = `${100 / ratio}vh`;
+            const originalPosition = element.style.position;
+            element.style.position = "absolute";
+            const originalDisplay = this.appRoot.style.display;
+            this.appRoot.style.display = "none";
+            this.fullscreenRoot.style.display = "block";
+
+            const onclickhandler = (ev) => {
+                originalParentElement.appendChild(element);
+                element.removeEventListener('click', onclickhandler);
+                element.style.width = originalWidth;
+                element.style.height = originalHeight;
+                element.style.position = originalPosition;
+                this.appRoot.style.display = originalDisplay;
+                this.fullscreenRoot.style.display = "none";
+                resolve("OK");
+            }
+            element.addEventListener('click', onclickhandler);
+        });
+    }
+}
 
 
 
@@ -166,6 +209,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
     /** @type {HTMLParagraphElement} */
     const detectionStatusTextElem = document.querySelector('p#detectionStatusText');
+
+    /** @type {HTMLDivElement} */
+    const fullscreenContainerElem = document.querySelector('div#fullscreenContainer');
+
+    /** @type {HTMLDivElement} */
+    const appContainerElem = document.querySelector('div#appContainer');
 
 
     const maskUtil = new MaskUtil();
@@ -360,23 +409,10 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
 
-    fullscreenButtonElem.addEventListener('click', () => {
+    fullscreenButtonElem.addEventListener('click', async () => {
         const outputFrameElem = maskUtil.resultFrameCanvas;
-        if (outputFrameElem.requestFullscreen) {
-            outputFrameElem.requestFullscreen()
-                .then((state) => {
-                    console.debug(state);
-                    // alert(state);
-                })
-                .catch((err) => {
-                    console.error(err);
-                    // alert(err);
-                });
-        } else {
-            // For WebKit
-
-            outputFrameElem.webkitRequestFullscreen();
-        } 
+        const util = new ShowElementAsFullScreenUtil(appContainerElem, fullscreenContainerElem);
+        await util.showAsync(outputFrameElem);
     });
 
     takeBackgroundImageButtonElem.addEventListener('click', async () => {
