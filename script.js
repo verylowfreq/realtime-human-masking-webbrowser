@@ -183,6 +183,9 @@ document.addEventListener("DOMContentLoaded", () => {
     /** @type {HTMLProgressElement} */
     const loadingProgressbarElem = document.querySelector('progress#loadingProgressbar');
 
+    /** @type {HTMLInputElement} */
+    const noUpdateDetectedAreaModeCheckboxElem = document.querySelector('input#noUpdateDetectedAreaModeCheckbox');
+
 
     // Elapsed time in msec
     let elapsedTime_msec = 0;
@@ -243,7 +246,11 @@ document.addEventListener("DOMContentLoaded", () => {
             if (results.segmentationMask) {
                 detectionStatusTextElem.textContent = "検出 / Detected.";
                 maskUtil.setBackground(targetVideoFrameCanvasElem);
-                maskUtil.generateImage(results.segmentationMask, useDilateAreaForMaskCheckboxElem.checked);
+                if (noUpdateDetectedAreaModeCheckboxElem.checked) {
+                    maskUtil.generateImage_2(results.segmentationMask, useDilateAreaForMaskCheckboxElem.checked);
+                } else {
+                    maskUtil.generateImage(results.segmentationMask, useDilateAreaForMaskCheckboxElem.checked);
+                }
             
             } else {
                 detectionStatusTextElem.textContent = "検出なし！ / Not detected.";

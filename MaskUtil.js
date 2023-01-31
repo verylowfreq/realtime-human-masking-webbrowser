@@ -44,7 +44,32 @@ class MaskUtil {
         ctx.drawImage(this.maskPatternCanvas, 0, 0, this.maskWorkspaceCanvas.width, this.maskWorkspaceCanvas.height);
     }
 
-    /** 与えられたマスクをもとに、合成したフレームを生成する
+    /** 検出領域だけ画像を更新せず、残りは最新のフレームを利用した合成フレームを生成する
+     */
+    generateImage_2(mask, expandArea = false) {
+        const ctx1 = this.maskBitmapCanvas.getContext('2d');
+        // 検出領域のマスクを準備
+        ctx1.clearRect(0, 0, this.maskBitmapCanvas.width, this.maskBitmapCanvas.height);
+        ctx1.drawImage(mask, 0, 0, this.maskBitmapCanvas.width, this.maskBitmapCanvas.height);
+        if (expandArea) {
+            const dilated = dilateArea(this.maskBitmapCanvas);
+            ctx1.putImageData(dilated, 0, 0);
+        }
+
+        // 検出領域だけ新しいフレームに更新するような画像を生成する
+        const ctx3 = this.maskWorkspaceCanvas.getContext('2d');
+        ctx3.clearRect(0, 0, this.maskWorkspaceCanvas.width, this.maskWorkspaceCanvas.height);
+        ctx3.globalCompositeOperation = "source-over";
+        ctx3.drawImage(this.maskBitmapCanvas, 0, 0, this.maskWorkspaceCanvas.width, this.maskWorkspaceCanvas.height);
+        ctx3.globalCompositeOperation = "source-out";
+        ctx3.drawImage(this.backgroundCanvas, 0, 0, this.maskWorkspaceCanvas.width, this.maskWorkspaceCanvas.height);
+
+        const ctx2 = this.resultFrameCanvas.getContext('2d');
+        // 更新範囲のフレームを上書きし、更新範囲外は直前のフレームをそのまま残す
+        ctx2.drawImage(this.maskWorkspaceCanvas, 0, 0, this.resultFrameCanvas.width, this.resultFrameCanvas.height);
+    }
+
+    /** 与えられたマスクをもとに、合成したフレームを生成する。固定の画像を利用
      * @param {Image}
      * @returns {void}
      */
