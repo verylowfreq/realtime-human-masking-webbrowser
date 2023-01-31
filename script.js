@@ -18,7 +18,7 @@ const dilateArea = (canvas) => {
             // let g = original.data[startIndex + 1];
             // let b = original.data[startIndex + 2];
             let a = original.data[startIndex + 3];
-            if (a > 0) {
+            if (a != 0) {
                 a = 255;
             }
             result.data[startIndex + 3] = a;
