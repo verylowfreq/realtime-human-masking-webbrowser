@@ -186,6 +186,18 @@ document.addEventListener("DOMContentLoaded", () => {
     /** @type {HTMLInputElement} */
     const noUpdateDetectedAreaModeCheckboxElem = document.querySelector('input#noUpdateDetectedAreaModeCheckbox');
 
+    /** @type {HTMLInputElement} */
+    const minDetectionConfidenceInputElem = document.querySelector('input#minDetectionConfidenceInput');
+
+    /** @type {HTMLInputElement} */
+    const minTrackingConfidenceInputElem = document.querySelector('input#minTrackingConfidenceInput');
+
+    /** @type {HTMLElement} */
+    const minDetectionConfidenceValueTextElem = document.querySelector('#minDetectionConfidenceValueText');
+    
+    /** @type {HTMLElement} */
+    const minTrackingConfidenceValueTextElem = document.querySelector('#minTrackingConfidenceValueText');
+
 
     // Elapsed time in msec
     let elapsedTime_msec = 0;
@@ -448,7 +460,22 @@ document.addEventListener("DOMContentLoaded", () => {
         maskUtil.setMaskPattern(backgroundImageCanvasElem);
     });
 
+    const thrsholdsChangedCallback = () => {
+        poseDetectionOpts.minDetectionConfidence = minDetectionConfidenceInputElem.valueAsNumber;
+        poseDetectionOpts.minTrackingConfidence = minTrackingConfidenceInputElem.valueAsNumber;
+        minDetectionConfidenceValueTextElem.textContent = `(${(poseDetectionOpts.minDetectionConfidence.toFixed(2))})`;
+        minTrackingConfidenceValueTextElem.textContent = `(${(poseDetectionOpts.minTrackingConfidence.toFixed(2))})`;
+        
+        poseDetector.setOptions(poseDetectionOpts);
+    };
+
+    minDetectionConfidenceInputElem.addEventListener('change', () => thrsholdsChangedCallback());
+    minTrackingConfidenceInputElem.addEventListener('change', () => thrsholdsChangedCallback());
+
     // Draw default background image
     drawSquarePattern(backgroundImageCanvasElem);
     maskUtil.setMaskPattern(backgroundImageCanvasElem);
+
+    // Update thresholds
+    thrsholdsChangedCallback();
 });

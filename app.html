@@ -25,6 +25,13 @@
 
         <div id="appContainer">
             <p id="performanceStatus">(Statistics)</p>
+            
+            <p>
+                <label>検出しきい値<input type="range" id="minDetectionConfidenceInput" value="0.5" min="0" max="1" step="0.05"></label><span id="minDetectionConfidenceValueText">(000)</span>
+                &nbsp;&nbsp;
+                <label>追跡しきい値<input type="range" id="minTrackingConfidenceInput" value="0.5" min="0" max="1" step="0.05"></label><span id="minTrackingConfidenceValueText">(000)</span>
+            </p>
+            
             <p>
                 <!-- <button id="changeVideoSourceDevice">Change</button> -->
                 <select id="videoSourceDeviceSelect">Webcam devices</select>
@@ -43,7 +50,7 @@
             <p>
                 <label><input type="checkbox" id="noUpdateDetectedAreaModeCheckbox">固定画像ではなく直前の映像を利用</label>
             </p>
-            
+
             <div id="resultCanvasContainer">
                 <p>処理結果 / Result: &nbsp;&nbsp; <button id="fullscreenButton">全画面表示/Fullscreen</button>(画面クリックで復帰)</p>
                 <p id="detectionStatusText">(Detection status)</p>
