@@ -1,36 +1,6 @@
 "use strict";
 
 
-/**
- * @param {HTMLCanvasElement} canvas
- * @return {ImageData}
-*/
-const dilateArea = (canvas) => {
-    const ctx = canvas.getContext('2d');
-    const original = ctx.getImageData(0, 0, canvas.width, canvas.height);
-    const originalData = original.data;
-    const result = ctx.createImageData(canvas.width, canvas.height);
-    const resultData = result.data;
-    const bpp = 4;
-    const stride = bpp * canvas.width;
-    const width = canvas.width;
-    const height = canvas.height;
-    for (let y = 0; y < height; y++) {
-        for (let x = 0; x < width; x++) {
-            let startIndex = y * stride + x * bpp;
-            // let r = original.data[startIndex + 0];
-            // let g = original.data[startIndex + 1];
-            // let b = original.data[startIndex + 2];
-            let a = originalData[startIndex + 3];
-            if (a != 0) {
-                resultData[startIndex + 3] = 255;
-            }
-        }
-    }
-    return result;
-};
-
-
 /** 2色のグレーで構成された格子パターンを描画する
  * @param {HTMLCanvasElement} canvas
  * @returns {void}
@@ -201,6 +171,11 @@ document.addEventListener("DOMContentLoaded", () => {
     /** @type {HTMLElement} */
     const minTrackingConfidenceValueTextElem = document.querySelector('#minTrackingConfidenceValueText');
 
+    /** @type {HTMLInputElement} */
+    const maskExpansionLevelInputElem = document.querySelector('input#maskExpansionLevelInput');
+
+    /** @type {HTMLElement} */
+    const maskExpansionLevelValueTextElem = document.querySelector('#maskExpansionLevelValueText');
 
     // Elapsed time in msec
     let elapsedTime_msec = 0;
@@ -261,6 +236,7 @@ document.addEventListener("DOMContentLoaded", () => {
             if (results.segmentationMask) {
                 detectionStatusTextElem.textContent = "検出 / Detected.";
                 maskUtil.setBackground(targetVideoFrameCanvasElem);
+                maskUtil.dilateAreaArg = 1.0 - maskExpansionLevelInputElem.valueAsNumber;
                 if (noUpdateDetectedAreaModeCheckboxElem.checked) {
                     maskUtil.generateImage_2(results.segmentationMask, useDilateAreaForMaskCheckboxElem.checked);
                 } else {
@@ -299,6 +275,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
 
     const updateVideoSourceDeviceList = () => {
+        const previousSelectedIndex = deviceSelectElem.selectedIndex;
+        console.debug(`prevseleInd=${previousSelectedIndex}`);
         navigator.mediaDevices.enumerateDevices()
             .then((list) => {
                 Array.from(deviceSelectElem.children).forEach((child) => {
@@ -318,6 +296,11 @@ document.addEventListener("DOMContentLoaded", () => {
                     deviceSelectElem.appendChild(optionElem);
                     // console.debug(device, optionElem);
                 });
+
+                if (previousSelectedIndex >= 0) {
+                    const newSelectedIndex = Math.min(previousSelectedIndex, deviceSelectElem.children.length);
+                    deviceSelectElem.selectedIndex = newSelectedIndex;
+                }
             })
             .catch((err) => {
                 console.error(`Error in enumerateDevices():`, err);
@@ -463,22 +446,34 @@ document.addEventListener("DOMContentLoaded", () => {
         maskUtil.setMaskPattern(backgroundImageCanvasElem);
     });
 
+    const thresholdInputCallback = () => {
+        minDetectionConfidenceValueTextElem.textContent = `(${(minDetectionConfidenceInputElem.valueAsNumber.toFixed(2))})`;
+        minTrackingConfidenceValueTextElem.textContent = `(${(minTrackingConfidenceInputElem.valueAsNumber.toFixed(2))})`;
+    };
+
     const thrsholdsChangedCallback = () => {
         poseDetectionOpts.minDetectionConfidence = minDetectionConfidenceInputElem.valueAsNumber;
         poseDetectionOpts.minTrackingConfidence = minTrackingConfidenceInputElem.valueAsNumber;
-        minDetectionConfidenceValueTextElem.textContent = `(${(poseDetectionOpts.minDetectionConfidence.toFixed(2))})`;
-        minTrackingConfidenceValueTextElem.textContent = `(${(poseDetectionOpts.minTrackingConfidence.toFixed(2))})`;
-        
         poseDetector.setOptions(poseDetectionOpts);
     };
 
-    minDetectionConfidenceInputElem.addEventListener('change', () => thrsholdsChangedCallback());
-    minTrackingConfidenceInputElem.addEventListener('change', () => thrsholdsChangedCallback());
+    minDetectionConfidenceInputElem.addEventListener('input', (ev) => thresholdInputCallback());
+    minTrackingConfidenceInputElem.addEventListener('input', (ev) => thresholdInputCallback());
+
+    minDetectionConfidenceInputElem.addEventListener('change', () => { thresholdInputCallback(); thrsholdsChangedCallback(); });
+    minTrackingConfidenceInputElem.addEventListener('change', () => { thresholdInputCallback(); thrsholdsChangedCallback(); });
+
+    const maskExpansionLeveChangedCallback = () => {
+        maskExpansionLevelValueText.textContent = `(${maskExpansionLevelInputElem.valueAsNumber.toFixed(2)})`;
+    };
+    maskExpansionLevelInputElem.addEventListener('input', () => maskExpansionLeveChangedCallback());
 
     // Draw default background image
     drawSquarePattern(backgroundImageCanvasElem);
     maskUtil.setMaskPattern(backgroundImageCanvasElem);
 
     // Update thresholds
+    thresholdInputCallback();
     thrsholdsChangedCallback();
+    maskExpansionLeveChangedCallback();
 });

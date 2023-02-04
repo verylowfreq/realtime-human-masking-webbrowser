@@ -27,9 +27,9 @@
             <p id="performanceStatus">(Statistics)</p>
             
             <p>
-                <label>検出しきい値<input type="range" id="minDetectionConfidenceInput" value="0.5" min="0" max="1" step="0.05"></label><span id="minDetectionConfidenceValueText">(000)</span>
+                <label>検出しきい値 / Detection threshold<input type="range" id="minDetectionConfidenceInput" value="0.5" min="0" max="1" step="0.05"></label><span id="minDetectionConfidenceValueText">(0.00)</span>
                 &nbsp;&nbsp;
-                <label>追跡しきい値<input type="range" id="minTrackingConfidenceInput" value="0.5" min="0" max="1" step="0.05"></label><span id="minTrackingConfidenceValueText">(000)</span>
+                <label>追跡しきい値 / Tracking threshold<input type="range" id="minTrackingConfidenceInput" value="0.5" min="0" max="1" step="0.05"></label><span id="minTrackingConfidenceValueText">(0.00)</span>
             </p>
             
             <p>
@@ -42,6 +42,8 @@
                 <label><input type="checkbox" id="forceHideOnNoDetectionCheckbox" checked>非検出時は全面マスク表示 / Force masking on no-detection</label>
                 &nbsp;&nbsp;
                 <label><input type="checkbox" id="useDilateAreaForMaskCheckbox">マスク領域を拡張する / Expand detected area</label>
+                &nbsp;&nbsp;
+                <label>マスク拡張量 / Expansion level<input type="range" id="maskExpansionLevelInput", value="0.9" min="0" max="1" step="0.05"><span id="maskExpansionLevelValueText">(0.00)</span></label>
             </p>
             <p>
                 <button id="takeBackgroundImageButton">未処理カメラ映像を撮ってマスクに設定 / Take a photo and set as mask</button>

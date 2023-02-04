@@ -6,6 +6,59 @@ class MaskUtil {
         this.maskBitmapCanvas = document.createElement('canvas');
         this.maskWorkspaceCanvas = document.createElement('canvas');
         this.resultFrameCanvas = document.createElement('canvas');
+        this.dilateAreaFunc = (canvas, arg) => this.dilateAreaFallback(canvas, arg);
+        this.dilateAreaArg = {};
+    }
+
+    dilateAreaFallback(canvas, threshold) {
+        const ctx = canvas.getContext('2d');
+
+        const original = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        const originalData = original.data;
+
+        // const result = ctx.createImageData(canvas.width, canvas.height);
+        // const resultData = result.data;
+        const resultData = original.data;
+
+        const bpp = 4;
+        const stride = Math.floor(bpp * canvas.width);
+        const width = Math.floor(canvas.width);
+        const height = Math.floor(canvas.height);
+        if (!threshold) {
+            threshold = 0;
+        }
+        threshold = Math.floor(255 * Math.min(1, Math.max(0, threshold)));
+
+        if (threshold == 0) {
+            for (let y = 0; y < height; y++) {
+                for (let x = 0; x < width; x++) {
+                    let startIndex = y * stride + x * bpp;
+                    // let r = original.data[startIndex + 0];
+                    // let g = original.data[startIndex + 1];
+                    // let b = original.data[startIndex + 2];
+                    let a = originalData[startIndex + 3];
+                    if (a != 0) {
+                        resultData[startIndex + 3] = 255;
+                    }
+                }
+            }
+        } else {
+            for (let y = 0; y < height; y++) {
+                for (let x = 0; x < width; x++) {
+                    let startIndex = y * stride + x * bpp;
+                    // let r = original.data[startIndex + 0];
+                    // let g = original.data[startIndex + 1];
+                    // let b = original.data[startIndex + 2];
+                    let a = originalData[startIndex + 3];
+                    // if (a != 0) {
+                    if (a > threshold) {
+                        resultData[startIndex + 3] = 255;
+                    }
+                }
+            }
+        }
+        // return result;
+        return original;
     }
 
     setSize(width, height) {
@@ -52,7 +105,7 @@ class MaskUtil {
         ctx1.clearRect(0, 0, this.maskBitmapCanvas.width, this.maskBitmapCanvas.height);
         ctx1.drawImage(mask, 0, 0, this.maskBitmapCanvas.width, this.maskBitmapCanvas.height);
         if (expandArea) {
-            const dilated = dilateArea(this.maskBitmapCanvas);
+            const dilated = this.dilateAreaFunc(this.maskBitmapCanvas, this.dilateAreaArg);
             ctx1.putImageData(dilated, 0, 0);
         }
 
@@ -78,7 +131,7 @@ class MaskUtil {
         ctx1.clearRect(0, 0, this.maskBitmapCanvas.width, this.maskBitmapCanvas.height);
         ctx1.drawImage(mask, 0, 0, this.maskBitmapCanvas.width, this.maskBitmapCanvas.height);
         if (expandArea) {
-            const dilated = dilateArea(this.maskBitmapCanvas);
+            const dilated = this.dilateAreaFunc(this.maskBitmapCanvas, this.dilateAreaArg);
             ctx1.putImageData(dilated, 0, 0);
             
             // ---- OpenCV.js (SLOW SPEED) ----
